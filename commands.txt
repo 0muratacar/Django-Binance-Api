@@ -1,0 +1,19 @@
+DEBUG MODE WITH pdb
+
+    -List running containers
+    sudo docker container ls -a
+
+    - Debug sonucunu görmek için ilgili containere attach ol.
+    <sudo docker attach <container_id>>
+
+    - isteği gönder ve attach olduğun yerde oraya kadar geldiğin değişkenleri yazdırabilirsin.
+
+
+CELERY
+
+    Projeyi docker compose ile kaldır
+    <docker exec -it django sh> ile konteynere gir.
+    <python manage.py shell> ile shelle gir
+    <from app.tasks import add>
+    <add.delay(2,3)>
+    yazdıktan sonra sonucu çıktıda görürsün.
