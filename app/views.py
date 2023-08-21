@@ -30,7 +30,6 @@ def getAccount(request):
             error_message = "Check Binance Client!"
             return JsonResponse({"error": error_message}, status=500)
         account = settings.BINANCE_CLIENT.get_account()
-        print(account)
         return JsonResponse({"message": account}, status=200)
 
 
