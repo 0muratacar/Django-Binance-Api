@@ -8,7 +8,7 @@ To run the Django Binance App, follow these steps:
 
 - Clone the repository.
 ```bash
-git clone <repository_url>
+git clone https://github.com/0muratacar/Django-Binance-Api.git
 ````
 
 - Create a .env file in the root directory of your project and add the following environment variables. Replace the placeholders with your actual values.
