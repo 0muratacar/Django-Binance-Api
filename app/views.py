@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from binance.client import Client
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseServerError, JsonResponse
 from app.tasks import add
@@ -8,10 +8,11 @@ import logging
 from .models import Balance
 from .serializers import BalanceSerializer
 from rest_framework.decorators import api_view
+from django.views import View
 
 
-def index(request):
-    if request.method == 'GET':
+class index(View):
+    def get(self, request):
         if (not (hasattr(settings, 'BINANCE_CLIENT'))):
             error_message = "Check Binance Client!"
             return JsonResponse({"error": error_message}, status=500)
@@ -24,8 +25,8 @@ def index(request):
         return JsonResponse({"message": "Binance initilaized succesfully!"}, status=200)
 
 
-def getAccount(request):
-    if request.method == 'GET':
+class getAccount(View):
+    def get(self, request):
         if (not (hasattr(settings, 'BINANCE_CLIENT'))):
             error_message = "Check Binance Client!"
             return JsonResponse({"error": error_message}, status=500)
@@ -33,8 +34,8 @@ def getAccount(request):
         return JsonResponse({"message": account}, status=200)
 
 
-def BalancesApi(request):
-    if request.method == 'GET':
+class BalancesApi(View):
+    def get(self, request):
         if (not (hasattr(settings, 'BINANCE_CLIENT'))):
             error_message = "Check Binance Client!"
             return JsonResponse({"error": error_message}, status=500)
@@ -47,20 +48,16 @@ def BalancesApi(request):
         return JsonResponse({"message": assets}, status=200)
 
 
-@api_view(['GET', 'POST'])
-def BalancesDb(request, id):
-    if request.method == 'GET':
-        if id is not None:
+class BalancesDb(View):
+    def get(self, request, id=None, *args, **kwargs):
+        if id is None:
+            balances = Balance.objects.all()
+            serializer = BalanceSerializer(balances, many=True)
+            return JsonResponse(serializer.data, status=200, safe=False)
+        else:
             try:
-                balance = Balance.objects.get(id=id)
+                balance = get_object_or_404(Balance, id=id)
                 serializer = BalanceSerializer(balance)
                 return JsonResponse(serializer.data, status=200)
             except Balance.DoesNotExist:
-                return JsonResponse({"message": "Balance not found"}, status=404)
-
-    elif request.method == 'POST':
-        serializer = BalanceSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data, status=201)
-        return JsonResponse(serializer.errors, status=400)
+                return JsonResponse({"message": "Error during fetch balance"}, status=404)
