@@ -56,8 +56,8 @@ class BalancesDb(View):
             return JsonResponse(serializer.data, status=200, safe=False)
         else:
             try:
-                balance = get_object_or_404(Balance, id=id)
+                balance = Balance.objects.get(id=id)
                 serializer = BalanceSerializer(balance)
                 return JsonResponse(serializer.data, status=200)
             except Balance.DoesNotExist:
-                return JsonResponse({"message": "Error during fetch balance"}, status=404)
+                return JsonResponse({"message": "Balance not found!"}, status=404)

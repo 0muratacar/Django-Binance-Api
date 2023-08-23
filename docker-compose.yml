@@ -4,9 +4,11 @@ services:
     django:
         build: .
         container_name: django
-        command: /app/entrypoint.sh
+        command: sh -c "python manage.py test && /app/entrypoint.sh"
         volumes:
             - .:/app/
+            - ./tests:/app/tests
+
         ports:
             - "8000:8000"
         environment:
